@@ -1,0 +1,15 @@
+{
+  "name": "anthropic-official",
+  "displayName": "Anthropic Official",
+  "description": "Curated skills from Anthropic's official skills repository",
+  "version": "1.0.0",
+  "tags": ["official", "anthropic"],
+  "repos": ["https://github.com/anthropics/skills.git"],
+  "skills": [
+    { "slug": "pdf", "repo": "https://github.com/anthropics/skills.git" },
+    { "slug": "mcp-builder", "repo": "https://github.com/anthropics/skills.git" },
+    { "slug": "skill-creator", "repo": "https://github.com/anthropics/skills.git" },
+    { "slug": "webapp-testing", "repo": "https://github.com/anthropics/skills.git" },
+    { "slug": "frontend-design", "repo": "https://github.com/anthropics/skills.git" }
+  ]
+}

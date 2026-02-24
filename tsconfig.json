@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "outDir": "dist",
+    "rootDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["src/core/*"],
+      "@fs/*": ["src/fs/*"],
+      "@deploy/*": ["src/deploy/*"],
+      "@commands/*": ["src/commands/*"],
+      "@tui/*": ["src/tui/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  },
+  "include": ["src/**/*", "bin/**/*"],
+  "exclude": ["node_modules", "dist", "tests"]
+}

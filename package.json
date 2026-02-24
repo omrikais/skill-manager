@@ -1,0 +1,95 @@
+{
+  "name": "skill-manager",
+  "version": "1.0.1",
+  "description": "Unified skill manager for Claude Code and Codex CLI",
+  "license": "MIT",
+  "author": "Omri Kaisari",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/omrikais/skill-manager.git"
+  },
+  "homepage": "https://github.com/omrikais/skill-manager#readme",
+  "bugs": {
+    "url": "https://github.com/omrikais/skill-manager/issues"
+  },
+  "keywords": [
+    "claude",
+    "codex",
+    "skills",
+    "cli",
+    "mcp"
+  ],
+  "type": "module",
+  "files": [
+    "dist/",
+    "packs/",
+    "templates/",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "sm": "./dist/bin/sm.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "lint:eslint": "eslint src/ bin/",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" \"bin/**/*.ts\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\" \"bin/**/*.ts\" \"tests/**/*.ts\"",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prepublishOnly": "npm run build",
+    "prepare": "husky",
+    "release": "node scripts/release.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "@inkjs/ui": "^2.0.0",
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "chalk": "^5.4.1",
+    "commander": "^12.1.0",
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.2.0",
+    "fullscreen-ink": "^0.1.0",
+    "gray-matter": "^4.0.3",
+    "ink": "^6.0.0",
+    "marked": "^15.0.12",
+    "marked-terminal": "^7.3.0",
+    "react": "^19.0.0",
+    "simple-git": "^3.27.0",
+    "zod": "^3.24.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/marked-terminal": "^6.1.1",
+    "@types/node": "^22.13.4",
+    "@types/react": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "eslint": "^9.39.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "husky": "^9.1.7",
+    "ink-testing-library": "^4.0.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^3.0.5"
+  }
+}
