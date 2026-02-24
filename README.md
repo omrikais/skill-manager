@@ -31,10 +31,7 @@ A unified tool for managing skills (instruction files) across **Claude Code** an
 ## Installation
 
 ```bash
-git clone <repo-url> && cd skill-manager
-npm install
-npm run build
-npm link
+npm install -g @omrikais/skill-manager
 ```
 
 This makes the `sm` command available globally.
@@ -52,6 +49,7 @@ sm import
 ```
 
 This scans four directories:
+
 - `~/.claude/commands/` (Claude Code legacy commands)
 - `~/.codex/prompts/` (Codex CLI legacy prompts)
 - `~/.agents/skills/` (Codex skills)
@@ -90,147 +88,147 @@ sm
 
 ### Core Commands
 
-| Command | Description |
-|---------|-------------|
-| `sm` | Launch the interactive TUI |
-| `sm list [--cc] [--codex] [--status]` | List skills with deployment indicators |
-| `sm info <name>` | Show detailed skill information |
-| `sm search <query>` | Search skills by name, description, tags, or content |
+| Command                               | Description                                          |
+| ------------------------------------- | ---------------------------------------------------- |
+| `sm`                                  | Launch the interactive TUI                           |
+| `sm list [--cc] [--codex] [--status]` | List skills with deployment indicators               |
+| `sm info <name>`                      | Show detailed skill information                      |
+| `sm search <query>`                   | Search skills by name, description, tags, or content |
 
 ### Deployment
 
-| Command | Description |
-|---------|-------------|
-| `sm add <name> [--cc] [--codex] [--all] [--no-deps]` | Deploy a skill to one or both tools |
+| Command                                                 | Description                                    |
+| ------------------------------------------------------- | ---------------------------------------------- |
+| `sm add <name> [--cc] [--codex] [--all] [--no-deps]`    | Deploy a skill to one or both tools            |
 | `sm remove <name> [--cc] [--codex] [--purge] [--force]` | Undeploy a skill; `--purge` deletes from store |
 
 Without flags, `add` and `remove` target both tools. `add` auto-deploys dependencies unless `--no-deps` is set. `remove` warns about deployed dependents unless `--force` is set.
 
 ### Import & Migration
 
-| Command | Description |
-|---------|-------------|
-| `sm import [--from all\|cc\|codex] [--dry-run]` | Import existing skills into canonical store |
-| `sm convert <name>` | Convert a legacy-format skill to the new directory format |
+| Command                                         | Description                                               |
+| ----------------------------------------------- | --------------------------------------------------------- |
+| `sm import [--from all\|cc\|codex] [--dry-run]` | Import existing skills into canonical store               |
+| `sm convert <name>`                             | Convert a legacy-format skill to the new directory format |
 
 ### Maintenance
 
-| Command | Description |
-|---------|-------------|
-| `sm sync [--dry-run] [--repair]` | Validate all symlinks; repair broken ones |
-| `sm doctor` | Full health check (symlinks, stale skills, unused skills, dependency integrity) |
-| `sm backup` | Create a timestamped backup |
-| `sm restore <id>` | Restore from a backup |
-| `sm backups` | List available backups |
+| Command                          | Description                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| `sm sync [--dry-run] [--repair]` | Validate all symlinks; repair broken ones                                       |
+| `sm doctor`                      | Full health check (symlinks, stale skills, unused skills, dependency integrity) |
+| `sm backup`                      | Create a timestamped backup                                                     |
+| `sm restore <id>`                | Restore from a backup                                                           |
+| `sm backups`                     | List available backups                                                          |
 
 ### Skill Authoring
 
-| Command | Description |
-|---------|-------------|
-| `sm create <name> [--template basic\|full]` | Scaffold a new skill |
-| `sm edit <name>` | Open a skill in `$EDITOR` |
-| `sm history <name>` | Show version history (version, date, hash, message) |
-| `sm rollback <name> [version]` | Restore a previous version (defaults to latest - 1) |
+| Command                                     | Description                                         |
+| ------------------------------------------- | --------------------------------------------------- |
+| `sm create <name> [--template basic\|full]` | Scaffold a new skill                                |
+| `sm edit <name>`                            | Open a skill in `$EDITOR`                           |
+| `sm history <name>`                         | Show version history (version, date, hash, message) |
+| `sm rollback <name> [version]`              | Restore a previous version (defaults to latest - 1) |
 
 ### Intelligence
 
-| Command | Description |
-|---------|-------------|
-| `sm suggest` | Recommend skills for the current project based on triggers |
-| `sm suggest --apply` | Auto-deploy matching skills |
-| `sm suggest --json` | Output suggestions as JSON |
-| `sm analytics` | Show usage stats for all skills (uses, last used, last deployed) |
-| `sm analytics --json` | Output usage stats as JSON |
+| Command               | Description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| `sm suggest`          | Recommend skills for the current project based on triggers       |
+| `sm suggest --apply`  | Auto-deploy matching skills                                      |
+| `sm suggest --json`   | Output suggestions as JSON                                       |
+| `sm analytics`        | Show usage stats for all skills (uses, last used, last deployed) |
+| `sm analytics --json` | Output usage stats as JSON                                       |
 
 ### Hooks
 
-| Command | Description |
-|---------|-------------|
-| `sm hooks setup` | Configure Claude Code `SessionStart` hook (global) |
-| `sm hooks setup --project` | Configure hook for current project only |
-| `sm hooks run <event>` | Execute a hook event (called by Claude Code, not users) |
+| Command                    | Description                                             |
+| -------------------------- | ------------------------------------------------------- |
+| `sm hooks setup`           | Configure Claude Code `SessionStart` hook (global)      |
+| `sm hooks setup --project` | Configure hook for current project only                 |
+| `sm hooks run <event>`     | Execute a hook event (called by Claude Code, not users) |
 
 ### MCP Server
 
-| Command | Description |
-|---------|-------------|
-| `sm mcp` | Start the MCP server (stdio transport, used by AI tools) |
-| `sm mcp setup [--tool cc\|codex\|all] [--scope user\|project\|local]` | Register the MCP server in Claude Code and/or Codex CLI |
-| `sm mcp uninstall [--tool cc\|codex\|all] [--scope user\|project\|local]` | Remove the MCP server from Claude Code and/or Codex CLI |
+| Command                                                                   | Description                                              |
+| ------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `sm mcp`                                                                  | Start the MCP server (stdio transport, used by AI tools) |
+| `sm mcp setup [--tool cc\|codex\|all] [--scope user\|project\|local]`     | Register the MCP server in Claude Code and/or Codex CLI  |
+| `sm mcp uninstall [--tool cc\|codex\|all] [--scope user\|project\|local]` | Remove the MCP server from Claude Code and/or Codex CLI  |
 
 ### Install
 
-| Command | Description |
-|---------|-------------|
-| `sm install [--profile <name>]` | Deploy skills from the project `.skills.json` manifest |
-| `sm install <url> [slugs...]` | Install skills from a git URL, optionally filtering by slug |
-| `sm install <user/repo> [slugs...]` | Install from GitHub shorthand |
-| `sm install npx <tool> add <user/repo> [slugs...]` | Paste any external install command |
-| `sm install ... --force` | Update existing skills without prompting |
+| Command                                            | Description                                                 |
+| -------------------------------------------------- | ----------------------------------------------------------- |
+| `sm install [--profile <name>]`                    | Deploy skills from the project `.skills.json` manifest      |
+| `sm install <url> [slugs...]`                      | Install skills from a git URL, optionally filtering by slug |
+| `sm install <user/repo> [slugs...]`                | Install from GitHub shorthand                               |
+| `sm install npx <tool> add <user/repo> [slugs...]` | Paste any external install command                          |
+| `sm install ... --force`                           | Update existing skills without prompting                    |
 
 When installing skills that already exist locally, `sm install` compares content hashes. Identical skills are skipped. Changed skills prompt for confirmation (or auto-update with `--force`). In non-interactive environments (piped stdin), changed skills are skipped by default.
 
 ### Project Manifests
 
-| Command | Description |
-|---------|-------------|
+| Command                    | Description                                      |
+| -------------------------- | ------------------------------------------------ |
 | `sm init [--from-current]` | Create a `.skills.json` in the current directory |
 
 ### Profiles
 
-| Command | Description |
-|---------|-------------|
-| `sm profile list` | List all profiles |
+| Command                    | Description                          |
+| -------------------------- | ------------------------------------ |
+| `sm profile list`          | List all profiles                    |
 | `sm profile create <name>` | Create a profile from current skills |
-| `sm profile apply <name>` | Deploy all skills in a profile |
-| `sm profile delete <name>` | Delete a profile |
+| `sm profile apply <name>`  | Deploy all skills in a profile       |
+| `sm profile delete <name>` | Delete a profile                     |
 
 ### Sources
 
-| Command | Description |
-|---------|-------------|
-| `sm source add <url> [--install]` | Add a git repo as a skill source; `--install` imports all skills |
-| `sm source list [--json]` | List configured sources with skill counts and sync status |
-| `sm source sync [name]` | Pull updates from one or all sources |
-| `sm source remove <name> [--purge]` | Remove a source; `--purge` deletes the cloned repo |
+| Command                             | Description                                                      |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| `sm source add <url> [--install]`   | Add a git repo as a skill source; `--install` imports all skills |
+| `sm source list [--json]`           | List configured sources with skill counts and sync status        |
+| `sm source sync [name]`             | Pull updates from one or all sources                             |
+| `sm source remove <name> [--purge]` | Remove a source; `--purge` deletes the cloned repo               |
 
 ### Publishing
 
-| Command | Description |
-|---------|-------------|
+| Command                                       | Description                                                    |
+| --------------------------------------------- | -------------------------------------------------------------- |
 | `sm publish <name> --out <dir> [--overwrite]` | Export a skill to a portable directory (SKILL.md + references) |
 
 ### Packs
 
-| Command | Description |
-|---------|-------------|
-| `sm pack list [--json]` | List available starter packs |
+| Command                              | Description                                                          |
+| ------------------------------------ | -------------------------------------------------------------------- |
+| `sm pack list [--json]`              | List available starter packs                                         |
 | `sm pack install <name> [--dry-run]` | Install a curated skill pack (clones repos, imports matching skills) |
 
 ## TUI Navigation
 
 The TUI runs in fullscreen mode (alternate screen buffer). Prior terminal output is hidden while the TUI is active and restored on exit. All list heights adjust dynamically to the terminal size.
 
-| Key | Action |
-|-----|--------|
-| `j`/`k` or arrows | Navigate lists |
-| `Enter` | Select / open detail |
-| `/` | Search (Dashboard and Browser) |
-| `f` | Cycle filter (in Browser): all, cc, codex, project, undeployed, remote |
-| `Tab` | Switch active scope in Detail (`User` ↔ `Project`) |
-| `u` / `p` | Set active scope to `User` / `Project` in Detail |
-| `c` / `x` | Toggle CC / Codex deployment in the active scope (Detail) |
-| `a` | Browse skills (Dashboard) / deploy both tools (Detail) / deploy selected (Browser bulk) / add source (Sources) |
-| `r` | Open Sources screen (Dashboard) / remove both tools (Detail) / undeploy selected (Browser bulk) |
-| `s` | Sync (Dashboard → Sync screen, Sources → sync selected source) |
-| `m` / `M` | MCP setup / uninstall (Dashboard) |
-| `Space` | Toggle multi-select on current skill (Browser) |
-| `d` | Delete skill permanently (Detail) / view diff (Sources detail) / remove source (Sources list) |
-| `D` | Delete skill(s) (Browser — single or bulk with confirmation) |
-| `i` / `I` | Install or update selected / install and update all (Sources detail) |
-| `?` | Show key reference overlay (any screen) |
-| `Esc` | Clear selection (Browser, when items selected) / go back / clear search |
-| `q` | Quit (from Dashboard) |
+| Key               | Action                                                                                                         |
+| ----------------- | -------------------------------------------------------------------------------------------------------------- |
+| `j`/`k` or arrows | Navigate lists                                                                                                 |
+| `Enter`           | Select / open detail                                                                                           |
+| `/`               | Search (Dashboard and Browser)                                                                                 |
+| `f`               | Cycle filter (in Browser): all, cc, codex, project, undeployed, remote                                         |
+| `Tab`             | Switch active scope in Detail (`User` ↔ `Project`)                                                             |
+| `u` / `p`         | Set active scope to `User` / `Project` in Detail                                                               |
+| `c` / `x`         | Toggle CC / Codex deployment in the active scope (Detail)                                                      |
+| `a`               | Browse skills (Dashboard) / deploy both tools (Detail) / deploy selected (Browser bulk) / add source (Sources) |
+| `r`               | Open Sources screen (Dashboard) / remove both tools (Detail) / undeploy selected (Browser bulk)                |
+| `s`               | Sync (Dashboard → Sync screen, Sources → sync selected source)                                                 |
+| `m` / `M`         | MCP setup / uninstall (Dashboard)                                                                              |
+| `Space`           | Toggle multi-select on current skill (Browser)                                                                 |
+| `d`               | Delete skill permanently (Detail) / view diff (Sources detail) / remove source (Sources list)                  |
+| `D`               | Delete skill(s) (Browser — single or bulk with confirmation)                                                   |
+| `i` / `I`         | Install or update selected / install and update all (Sources detail)                                           |
+| `?`               | Show key reference overlay (any screen)                                                                        |
+| `Esc`             | Clear selection (Browser, when items selected) / go back / clear search                                        |
+| `q`               | Quit (from Dashboard)                                                                                          |
 
 ### Bulk Operations (Browser)
 
@@ -238,16 +236,17 @@ The Browser screen supports multi-select for batch operations. Press `Space` to 
 
 When one or more skills are selected:
 
-| Key | Action |
-|-----|--------|
-| `a` | Deploy all selected to CC + Codex (user scope) |
-| `r` | Undeploy all selected from CC + Codex |
-| `D` | Delete all selected permanently (with confirmation dialog) |
-| `Esc` | Clear selection |
+| Key   | Action                                                     |
+| ----- | ---------------------------------------------------------- |
+| `a`   | Deploy all selected to CC + Codex (user scope)             |
+| `r`   | Undeploy all selected from CC + Codex                      |
+| `D`   | Delete all selected permanently (with confirmation dialog) |
+| `Esc` | Clear selection                                            |
 
 After each bulk action, a status message reports results (e.g., `Deployed 3 skills to CC + Codex` or `Undeployed 2 skills from CC + Codex; 1 already undeployed`). Selection is cleared and the skill list refreshes automatically.
 
 Detail view and list rows always show both scopes explicitly:
+
 - `User: CC on/off, Codex on/off`
 - `Project: CC on/off, Codex on/off` (current working directory)
 
@@ -269,13 +268,13 @@ Every skill lives in `~/.skill-manager/skills/<slug>/`:
 
 The `deployAs` field in `.sm-meta.json` controls how each skill is exposed to each tool:
 
-| Format | Link created | Points to |
-|--------|-------------|-----------|
-| `legacy-command` | `~/.claude/commands/<slug>.md` | `SKILL.md` (file link) |
-| `legacy-prompt` | `~/.codex/prompts/<slug>.md` | `SKILL.md` (file link) |
-| `skill` (CC) | `~/.claude/skills/<slug>/` | skill directory (dir link) |
-| `skill` (Codex) | `~/.agents/skills/<slug>/` | skill directory (dir link) |
-| `none` | — | not deployed to that tool |
+| Format           | Link created                   | Points to                  |
+| ---------------- | ------------------------------ | -------------------------- |
+| `legacy-command` | `~/.claude/commands/<slug>.md` | `SKILL.md` (file link)     |
+| `legacy-prompt`  | `~/.codex/prompts/<slug>.md`   | `SKILL.md` (file link)     |
+| `skill` (CC)     | `~/.claude/skills/<slug>/`     | skill directory (dir link) |
+| `skill` (Codex)  | `~/.agents/skills/<slug>/`     | skill directory (dir link) |
+| `none`           | —                              | not deployed to that tool  |
 
 All symlink operations are atomic (create temp link, then rename).
 
@@ -297,9 +296,7 @@ Create a `.skills.json` to declare which skills a project needs:
   "profiles": {
     "python-dev": {
       "description": "Python development skills",
-      "skills": [
-        { "name": "py-testing-async", "scope": "project" }
-      ]
+      "skills": [{ "name": "py-testing-async", "scope": "project" }]
     }
   },
   "activeProfile": "python-dev"
@@ -337,8 +334,8 @@ Skills can declare dependencies on other skills via `depends` in YAML frontmatte
 
 ```yaml
 ---
-name: "API Testing"
-description: "Tools for testing REST APIs"
+name: 'API Testing'
+description: 'Tools for testing REST APIs'
 depends: [http-client, json-validator]
 ---
 ```
@@ -368,11 +365,11 @@ Skills can declare file and directory patterns that indicate when they're useful
 
 ```yaml
 ---
-name: "Rust Helper"
-description: "Assists with Rust development"
+name: 'Rust Helper'
+description: 'Assists with Rust development'
 triggers:
-  files: ["Cargo.toml", "*.rs"]
-  dirs: [".cargo"]
+  files: ['Cargo.toml', '*.rs']
+  dirs: ['.cargo']
 ---
 ```
 
@@ -423,6 +420,7 @@ Skill Manager automatically detects and imports any unmanaged skills you place d
 ### How It Works
 
 If you manually create a skill file or directory in any tool location:
+
 - `~/.claude/commands/my-skill.md` — a legacy command
 - `~/.claude/skills/my-skill/SKILL.md` — a CC skill directory
 - `~/.codex/prompts/my-prompt.md` — a Codex legacy prompt
@@ -622,8 +620,8 @@ sm pack install anthropic-official
 
 Built-in packs:
 
-| Pack | Description |
-|------|-------------|
+| Pack                 | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
 | `anthropic-official` | Curated skills from Anthropic's official skills repository |
 
 Pack definitions live in `packs/*.json` and reference skills by slug and source repository URL. Installing a pack automatically adds the referenced repos as sources.
@@ -675,36 +673,36 @@ args = ["mcp"]
 
 Once registered, the AI assistant gains access to these tools:
 
-| Tool | Description |
-|------|-------------|
-| `list_skills` | List all managed skills, optionally filtered by tag or deployment status |
-| `get_skill` | Read a skill's full markdown content, metadata, and file listing |
-| `search_skills` | Search skills by name, description, tags, or content body |
-| `deploy_skill` | Deploy a skill to Claude Code and/or Codex CLI with automatic dependency resolution |
-| `undeploy_skill` | Remove a skill deployment, with dependent safety checks |
-| `suggest_skills` | Get trigger-based skill suggestions for a project directory |
-| `get_analytics` | View usage statistics, stale skills, and unused skills |
-| `list_sources` | List configured remote skill sources with sync status |
-| `sync_source` | Sync one or all remote skill sources (git pull + rescan) |
+| Tool             | Description                                                                         |
+| ---------------- | ----------------------------------------------------------------------------------- |
+| `list_skills`    | List all managed skills, optionally filtered by tag or deployment status            |
+| `get_skill`      | Read a skill's full markdown content, metadata, and file listing                    |
+| `search_skills`  | Search skills by name, description, tags, or content body                           |
+| `deploy_skill`   | Deploy a skill to Claude Code and/or Codex CLI with automatic dependency resolution |
+| `undeploy_skill` | Remove a skill deployment, with dependent safety checks                             |
+| `suggest_skills` | Get trigger-based skill suggestions for a project directory                         |
+| `get_analytics`  | View usage statistics, stale skills, and unused skills                              |
+| `list_sources`   | List configured remote skill sources with sync status                               |
+| `sync_source`    | Sync one or all remote skill sources (git pull + rescan)                            |
 
 ### Available Resources
 
-| Resource URI | Description |
-|-------------|-------------|
-| `skill://{slug}` | Raw markdown content of a specific skill |
+| Resource URI          | Description                                                |
+| --------------------- | ---------------------------------------------------------- |
+| `skill://{slug}`      | Raw markdown content of a specific skill                   |
 | `skill-catalog://all` | JSON catalog of all skills (slug, name, description, tags) |
 
 ### Example Usage
 
 With the MCP server registered, you can ask your AI assistant things like:
 
-- *"What skills do I have for Python development?"* — triggers `search_skills`
-- *"Deploy the rust-helper skill"* — triggers `deploy_skill`
-- *"What skills would be useful for this project?"* — triggers `suggest_skills`
-- *"Show me the content of the commit skill"* — triggers `get_skill` or reads `skill://commit`
-- *"Which skills haven't I used recently?"* — triggers `get_analytics`
-- *"What remote sources do I have configured?"* — triggers `list_sources`
-- *"Sync my skill sources"* — triggers `sync_source`
+- _"What skills do I have for Python development?"_ — triggers `search_skills`
+- _"Deploy the rust-helper skill"_ — triggers `deploy_skill`
+- _"What skills would be useful for this project?"_ — triggers `suggest_skills`
+- _"Show me the content of the commit skill"_ — triggers `get_skill` or reads `skill://commit`
+- _"Which skills haven't I used recently?"_ — triggers `get_analytics`
+- _"What remote sources do I have configured?"_ — triggers `list_sources`
+- _"Sync my skill sources"_ — triggers `sync_source`
 
 ## Configuration
 
@@ -719,6 +717,7 @@ logLevel = "info"          # debug | info | warn | error
 ```
 
 **Config options:**
+
 - `defaultTools` — Which tools to target by default in `add` and `remove` commands
 - `autoSync` — Sync remote sources on `sm import`
 - `autoAdopt` — Automatically detect and adopt unmanaged skills from tool directories
