@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-03-04
+
+### Fixed
+
+- Source scanner now discovers skills inside `.claude/`, `.codex/`, and `.agents/` directories in repos
+- `sm remove` cleans up orphaned state records when the skill directory no longer exists
+- `sm sync --repair` removes orphaned state records only when the target skill directory is truly missing
+
+### Changed
+
+- Source install imports skills to canonical store without auto-deploying to tool directories
+
 ## [1.0.1] - 2026-02-24
 
 ### Added
