@@ -21,42 +21,54 @@ async function createFakeRepo(baseDir: string): Promise<string> {
   // Skill in subdirectory with SKILL.md
   const skillADir = path.join(repoDir, 'skill-a');
   await fs.ensureDir(skillADir);
-  await fs.writeFile(path.join(skillADir, 'SKILL.md'), `---
+  await fs.writeFile(
+    path.join(skillADir, 'SKILL.md'),
+    `---
 name: Skill A
 description: First test skill
 tags: [test]
 ---
 # Skill A content
-`);
+`,
+  );
 
   // Skill in subdirectory with SKILL.md (was .md fallback, now proper SKILL.md)
   const skillBDir = path.join(repoDir, 'skill-b');
   await fs.ensureDir(skillBDir);
-  await fs.writeFile(path.join(skillBDir, 'SKILL.md'), `---
+  await fs.writeFile(
+    path.join(skillBDir, 'SKILL.md'),
+    `---
 name: Skill B
 description: Second test skill
 ---
 # Skill B content
-`);
+`,
+  );
 
   // Top-level standalone .md
-  await fs.writeFile(path.join(repoDir, 'standalone-skill.md'), `---
+  await fs.writeFile(
+    path.join(repoDir, 'standalone-skill.md'),
+    `---
 name: Standalone Skill
 description: A standalone skill
 ---
 # Standalone content
-`);
+`,
+  );
 
   // Nested skill 3 levels deep: vendor/skills/nested-skill/SKILL.md
   const nestedDir = path.join(repoDir, 'vendor', 'skills', 'nested-skill');
   await fs.ensureDir(nestedDir);
-  await fs.writeFile(path.join(nestedDir, 'SKILL.md'), `---
+  await fs.writeFile(
+    path.join(nestedDir, 'SKILL.md'),
+    `---
 name: Nested Skill
 description: A deeply nested skill
 tags: [nested]
 ---
 # Nested content
-`);
+`,
+  );
 
   // Organizational dir with CLAUDE.md that should NOT become a skill
   const claudeDir = path.join(repoDir, 'claude');
@@ -66,12 +78,15 @@ tags: [nested]
   // Skill nested inside claude/skills/
   const innerSkillDir = path.join(claudeSkillsDir, 'inner-skill');
   await fs.ensureDir(innerSkillDir);
-  await fs.writeFile(path.join(innerSkillDir, 'SKILL.md'), `---
+  await fs.writeFile(
+    path.join(innerSkillDir, 'SKILL.md'),
+    `---
 name: Inner Skill
 description: Inside claude/skills
 ---
 # Inner content
-`);
+`,
+  );
 
   // docs/ dir with a non-skill .md (should NOT be picked up)
   const docsDir = path.join(repoDir, 'docs');
@@ -88,23 +103,29 @@ description: Inside claude/skills
   await fs.writeFile(path.join(repoDir, 'TODO.md'), '# TODO\n- fix stuff');
 
   // nameless-skill.md — has description/tags but no name, should be discovered
-  await fs.writeFile(path.join(repoDir, 'nameless-skill.md'), `---
+  await fs.writeFile(
+    path.join(repoDir, 'nameless-skill.md'),
+    `---
 description: A skill without a name field
 tags: [test]
 ---
 # Nameless skill content
-`);
+`,
+  );
 
   // Generic "skill" directory with frontmatter name
   const genericSkillDir = path.join(repoDir, 'skill');
   await fs.ensureDir(genericSkillDir);
-  await fs.writeFile(path.join(genericSkillDir, 'SKILL.md'), `---
+  await fs.writeFile(
+    path.join(genericSkillDir, 'SKILL.md'),
+    `---
 name: Real Name
 description: A skill in a generic directory
 tags: [generic]
 ---
 # Real content
-`);
+`,
+  );
 
   // Files that should be ignored
   await fs.writeFile(path.join(repoDir, 'README.md'), '# My Repo');
@@ -167,20 +188,26 @@ describe('scanSourceRepo', () => {
     // Top-level skill-a
     const topDir = path.join(repoDir, 'skill-a');
     await fs.ensureDir(topDir);
-    await fs.writeFile(path.join(topDir, 'SKILL.md'), `---
+    await fs.writeFile(
+      path.join(topDir, 'SKILL.md'),
+      `---
 name: Top Skill A
 ---
 # Top
-`);
+`,
+    );
 
     // Nested duplicate skill-a
     const nestedDir = path.join(repoDir, 'vendor', 'skill-a');
     await fs.ensureDir(nestedDir);
-    await fs.writeFile(path.join(nestedDir, 'SKILL.md'), `---
+    await fs.writeFile(
+      path.join(nestedDir, 'SKILL.md'),
+      `---
 name: Nested Skill A
 ---
 # Nested
-`);
+`,
+    );
 
     const skills = await scanSourceRepo(repoDir, 'test', 'https://example.com/test.git');
     const matches = skills.filter((s) => s.slug === 'skill-a');
@@ -333,12 +360,15 @@ name: Nested Skill A
     const repoDir = path.join(tmp.home, 'single-skill-repo');
     await fs.ensureDir(repoDir);
 
-    await fs.writeFile(path.join(repoDir, 'SKILL.md'), `---
+    await fs.writeFile(
+      path.join(repoDir, 'SKILL.md'),
+      `---
 name: My Single Skill
 description: A single-skill repo
 ---
 # Content
-`);
+`,
+    );
     await fs.ensureDir(path.join(repoDir, 'references'));
     await fs.writeFile(path.join(repoDir, 'references', 'api.md'), 'API docs');
 
@@ -346,6 +376,106 @@ description: A single-skill repo
     expect(skills.length).toBe(1);
     expect(skills[0].slug).toBe('my-single-skill');
     expect(skills[0].name).toBe('My Single Skill');
+  });
+
+  it('discovers skills inside .claude/skills/ directories', async () => {
+    const { scanSourceRepo } = await import('../../src/sources/scanner.js');
+    const repoDir = path.join(tmp.home, 'claude-skills-repo');
+    await fs.ensureDir(repoDir);
+
+    // Mimic a real repo like mrgoonie/claudekit-skills
+    await fs.ensureDir(path.join(repoDir, '.git'));
+    await fs.writeFile(path.join(repoDir, 'README.md'), '# My Skills Repo');
+
+    // Skills under .claude/skills/
+    const debugDir = path.join(repoDir, '.claude', 'skills', 'debugging');
+    await fs.ensureDir(debugDir);
+    await fs.writeFile(
+      path.join(debugDir, 'SKILL.md'),
+      `---
+name: Debugging
+description: Debug tools
+tags: [debug]
+---
+# Debugging skill
+`,
+    );
+
+    const frontendDir = path.join(repoDir, '.claude', 'skills', 'frontend');
+    await fs.ensureDir(frontendDir);
+    await fs.writeFile(
+      path.join(frontendDir, 'SKILL.md'),
+      `---
+name: Frontend Dev
+description: Frontend tools
+---
+# Frontend skill
+`,
+    );
+    await fs.ensureDir(path.join(frontendDir, 'references'));
+    await fs.writeFile(path.join(frontendDir, 'references', 'api.md'), 'API docs');
+
+    // Skill under .agents/skills/
+    const agentSkillDir = path.join(repoDir, '.agents', 'skills', 'my-agent-skill');
+    await fs.ensureDir(agentSkillDir);
+    await fs.writeFile(
+      path.join(agentSkillDir, 'SKILL.md'),
+      `---
+name: Agent Skill
+description: An agent skill
+---
+# Agent skill content
+`,
+    );
+
+    const skills = await scanSourceRepo(repoDir, 'test', 'https://example.com/test.git');
+    const slugs = skills.map((s) => s.slug);
+
+    expect(slugs).toContain('debugging');
+    expect(slugs).toContain('frontend');
+    expect(slugs).toContain('my-agent-skill');
+    expect(skills.length).toBe(3);
+
+    const debug = skills.find((s) => s.slug === 'debugging')!;
+    expect(debug.name).toBe('Debugging');
+    expect(debug.tags).toContain('debug');
+  });
+
+  it('still skips other hidden directories like .github', async () => {
+    const { scanSourceRepo } = await import('../../src/sources/scanner.js');
+    const repoDir = path.join(tmp.home, 'hidden-dir-repo');
+    await fs.ensureDir(repoDir);
+
+    // Skill inside .github (should NOT be found)
+    const ghDir = path.join(repoDir, '.github', 'skill-thing');
+    await fs.ensureDir(ghDir);
+    await fs.writeFile(
+      path.join(ghDir, 'SKILL.md'),
+      `---
+name: GitHub Skill
+---
+# Should not be found
+`,
+    );
+
+    // Skill inside .claude (SHOULD be found)
+    const claudeDir = path.join(repoDir, '.claude', 'skills', 'real-skill');
+    await fs.ensureDir(claudeDir);
+    await fs.writeFile(
+      path.join(claudeDir, 'SKILL.md'),
+      `---
+name: Real Skill
+---
+# Found
+`,
+    );
+
+    const skills = await scanSourceRepo(repoDir, 'test', 'https://example.com/test.git');
+    const slugs = skills.map((s) => s.slug);
+
+    expect(slugs).toContain('real-skill');
+    expect(slugs).not.toContain('skill-thing');
+    expect(skills.length).toBe(1);
   });
 
   it('skips root SKILL.md without frontmatter name', async () => {

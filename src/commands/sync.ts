@@ -1,5 +1,6 @@
+import fs from 'fs-extra';
 import chalk from 'chalk';
-import { loadState, updateLastSync, type LinkRecord } from '../core/state.js';
+import { loadState, saveState, updateLastSync, type LinkRecord } from '../core/state.js';
 import { validateLink, repairLink, type LinkStatus } from '../fs/links.js';
 import { deployLinkPath, type ToolName, type DeployFormat } from '../fs/paths.js';
 import { deploy, undeploy } from '../deploy/engine.js';
@@ -145,16 +146,32 @@ export async function syncCommand(opts: SyncOptions): Promise<void> {
     if (issues.length > 0) {
       console.log(chalk.bold('\nRepairing...'));
       let repaired = 0;
+      let cleaned = 0;
       for (const r of issues) {
         const result = await repairLink(r.status.linkPath, r.status.expectedTarget);
         if (result.health === 'healthy') {
           console.log(`  ${chalk.green('✓')} Repaired: ${r.slug} (${r.tool})`);
           repaired++;
+        } else if (result.health === 'broken' && !(await fs.pathExists(r.targetPath))) {
+          // Target skill dir is gone — remove the orphaned state record
+          const st = await loadState();
+          const before = st.links.length;
+          st.links = st.links.filter((l) => !(l.slug === r.slug && l.tool === r.tool && l.linkPath === r.linkPath));
+          if (st.links.length < before) {
+            await saveState(st);
+            console.log(`  ${chalk.cyan('○')} Cleaned orphaned record: ${r.slug} (${r.tool})`);
+            cleaned++;
+          } else {
+            console.log(`  ${chalk.red('✗')} Could not repair: ${r.slug} (${r.tool}): ${result.detail}`);
+          }
         } else {
           console.log(`  ${chalk.red('✗')} Could not repair: ${r.slug} (${r.tool}): ${result.detail}`);
         }
       }
-      console.log(chalk.green(`\n✓ Repaired ${repaired} of ${issues.length} issues.`));
+      const parts: string[] = [];
+      if (repaired > 0) parts.push(`${repaired} repaired`);
+      if (cleaned > 0) parts.push(`${cleaned} orphaned records cleaned`);
+      console.log(chalk.green(`\n✓ ${parts.join(', ')} (${issues.length} issues).`));
     }
   } else if (totalIssues > 0 && !opts.repair) {
     console.log(chalk.dim('\nRun `sm sync --repair` to fix issues.'));

@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [1.0.1] - 2026-02-24
 
-
 ### Added
 
 - Scope and tool targeting for Browse screen bulk operations (Tab to switch User/Project, c/x to toggle CC/Codex)

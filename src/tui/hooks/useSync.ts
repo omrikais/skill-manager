@@ -1,5 +1,6 @@
+import fs from 'fs-extra';
 import { useState, useCallback } from 'react';
-import { loadState, type LinkRecord } from '../../core/state.js';
+import { loadState, saveState, type LinkRecord } from '../../core/state.js';
 import { validateLink, repairLink, type LinkStatus } from '../../fs/links.js';
 import { deployLinkPath, type ToolName, type DeployFormat } from '../../fs/paths.js';
 import { deploy, undeploy } from '../../deploy/engine.js';
@@ -56,10 +57,20 @@ export function useSync() {
     }
   }, []);
 
-  const repair = useCallback(async (linkPath: string, expectedTarget: string) => {
-    await repairLink(linkPath, expectedTarget);
-    await runSync();
-  }, [runSync]);
+  const repair = useCallback(
+    async (linkPath: string, expectedTarget: string) => {
+      const result = await repairLink(linkPath, expectedTarget);
+      if (result.health === 'broken' && !(await fs.pathExists(expectedTarget))) {
+        // Target skill dir is gone — remove the orphaned state record
+        const st = await loadState();
+        const before = st.links.length;
+        st.links = st.links.filter((l) => l.linkPath !== linkPath);
+        if (st.links.length < before) await saveState(st);
+      }
+      await runSync();
+    },
+    [runSync],
+  );
 
   const migrate = useCallback(async () => {
     setRunning(true);

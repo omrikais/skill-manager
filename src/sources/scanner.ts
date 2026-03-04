@@ -17,10 +17,21 @@ export interface RemoteSkill {
 }
 
 const IGNORE_DIRS = new Set(['.git', 'node_modules', 'references']);
+
+/** Hidden directories that may contain skills and should be recursed into. */
+const ALLOWED_HIDDEN_DIRS = new Set(['.claude', '.codex', '.agents']);
 const IGNORE_FILES = new Set([
-  'README.md', 'LICENSE', 'LICENSE.md', 'CHANGELOG.md', 'CLAUDE.md',
-  'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md', 'SECURITY.md', 'CHANGES.md',
-  'HISTORY.md', 'AUTHORS.md',
+  'README.md',
+  'LICENSE',
+  'LICENSE.md',
+  'CHANGELOG.md',
+  'CLAUDE.md',
+  'CONTRIBUTING.md',
+  'CODE_OF_CONDUCT.md',
+  'SECURITY.md',
+  'CHANGES.md',
+  'HISTORY.md',
+  'AUTHORS.md',
 ]);
 
 const MAX_DEPTH = 5;
@@ -38,11 +49,7 @@ const GENERIC_DIR_NAMES = new Set(['skill', 'skills']);
  * 3. Top-level standalone .md files are treated as skills (backward compat for flat repos).
  * 4. Deduplicate by slug (first found wins).
  */
-export async function scanSourceRepo(
-  repoDir: string,
-  sourceName: string,
-  sourceUrl: string,
-): Promise<RemoteSkill[]> {
+export async function scanSourceRepo(repoDir: string, sourceName: string, sourceUrl: string): Promise<RemoteSkill[]> {
   const skills: RemoteSkill[] = [];
   const seen = new Set<string>();
 
@@ -99,7 +106,7 @@ async function scanDir(
   entries.sort((a, b) => a.name.localeCompare(b.name));
 
   for (const entry of entries) {
-    if (entry.name.startsWith('.')) continue;
+    if (entry.name.startsWith('.') && !ALLOWED_HIDDEN_DIRS.has(entry.name)) continue;
     if (IGNORE_DIRS.has(entry.name)) continue;
     if (!entry.isDirectory()) continue;
 

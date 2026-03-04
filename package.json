@@ -1,5 +1,5 @@
 {
-  "name": "@omrikais/skill-manager",
+  "name": "skill-manager",
   "version": "1.0.1",
   "description": "Unified skill manager for Claude Code and Codex CLI",
   "license": "MIT",

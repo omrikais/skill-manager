@@ -14,11 +14,14 @@ import {
 import { cloneOrPull, cloneOrPullWithStatus } from '../sources/git.js';
 import { scanSourceRepo } from '../sources/scanner.js';
 import { sourceRepoDir } from '../fs/paths.js';
-import { importSingleSkill, deploySingleSkill, checkSkillConflict } from './_import-helpers.js';
+import { importSingleSkill, checkSkillConflict } from './_import-helpers.js';
 import { formatTable } from '../utils/table.js';
 import { SourceError, SourceNotFoundError } from '../utils/errors.js';
 
-export async function sourceAddCommand(url: string, opts: { install?: boolean; slugs?: string[]; force?: boolean }): Promise<void> {
+export async function sourceAddCommand(
+  url: string,
+  opts: { install?: boolean; slugs?: string[]; force?: boolean },
+): Promise<void> {
   validateSourceUrl(url);
 
   const name = deriveSourceName(url);
@@ -29,7 +32,7 @@ export async function sourceAddCommand(url: string, opts: { install?: boolean; s
     if (normalizeSourceUrl(existing.url) !== normalizeSourceUrl(url)) {
       throw new SourceError(
         `Source "${name}" already exists with a different URL (${existing.url}). ` +
-        `Remove it first with \`sm source remove ${name}\`, then add the new one.`,
+          `Remove it first with \`sm source remove ${name}\`, then add the new one.`,
       );
     }
     console.log(chalk.dim(`Source "${name}" already exists. Syncing...`));
@@ -86,8 +89,7 @@ export async function sourceAddCommand(url: string, opts: { install?: boolean; s
       const missing = opts.slugs.filter((s) => !available.has(s));
       if (missing.length > 0) {
         throw new SourceError(
-          `Skills not found in "${name}": ${missing.join(', ')}. ` +
-          `Available: ${[...available].join(', ')}`,
+          `Skills not found in "${name}": ${missing.join(', ')}. ` + `Available: ${[...available].join(', ')}`,
         );
       }
       const requested = new Set(opts.slugs);
@@ -122,7 +124,6 @@ export async function sourceAddCommand(url: string, opts: { install?: boolean; s
           content,
           source: { type: 'git', repo: gitUrl, originalPath: skill.filePath },
         });
-        await deploySingleSkill(skill.slug, ['cc', 'codex']);
         if (skill.installed) {
           updated++;
         } else {
@@ -137,7 +138,9 @@ export async function sourceAddCommand(url: string, opts: { install?: boolean; s
     if (updated > 0) parts.push(`${updated} updated`);
     const filterNote = opts.slugs?.length
       ? ` (${toInstall.length} selected${parts.length ? ', ' + parts.join(', ') : ''})`
-      : parts.length ? ` (${parts.join(', ')})` : '';
+      : parts.length
+        ? ` (${parts.join(', ')})`
+        : '';
     console.log(chalk.green(`\n✓ Added source "${name}" with ${skills.length} skills${filterNote}`));
   } else {
     console.log(chalk.green(`\n✓ Added source "${name}" with ${skills.length} skills`));
@@ -178,9 +181,7 @@ export async function sourceListCommand(opts: { json?: boolean }): Promise<void>
 
 export async function sourceSyncCommand(opts: { name?: string }): Promise<void> {
   const registry = await loadSourcesRegistry();
-  const sources = opts.name
-    ? registry.sources.filter((s) => s.name === opts.name)
-    : registry.sources;
+  const sources = opts.name ? registry.sources.filter((s) => s.name === opts.name) : registry.sources;
 
   if (sources.length === 0) {
     if (opts.name) {

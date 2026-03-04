@@ -2,7 +2,8 @@ import chalk from 'chalk';
 import { skillExists, deleteSkill } from '../core/skill.js';
 import { undeploy, undeployProject } from '../deploy/engine.js';
 import { buildDepGraph, getDependents } from '../core/deps.js';
-import { getLinkRecords } from '../core/state.js';
+import { getLinkRecords, loadState, saveState } from '../core/state.js';
+import { removeLink } from '../fs/links.js';
 import { type ToolName } from '../fs/paths.js';
 import { SmError, SkillNotFoundError, UsageError } from '../utils/errors.js';
 
@@ -16,6 +17,18 @@ interface RemoveOptions {
 
 export async function removeCommand(name: string, opts: RemoveOptions): Promise<void> {
   if (!(await skillExists(name))) {
+    // Skill dir is gone — clean up orphaned state records and dangling symlinks
+    const orphanedLinks = await getLinkRecords(name);
+    if (orphanedLinks.length > 0) {
+      for (const link of orphanedLinks) {
+        await removeLink(link.linkPath);
+      }
+      const state = await loadState();
+      state.links = state.links.filter((l) => l.slug !== name);
+      await saveState(state);
+      console.log(chalk.green(`✓ Cleaned up ${orphanedLinks.length} orphaned link record(s) for "${name}"`));
+      return;
+    }
     throw new SkillNotFoundError(name);
   }
 
@@ -31,15 +44,13 @@ export async function removeCommand(name: string, opts: RemoveOptions): Promise<
   // Check for dependents unless --force
   if (!opts.force) {
     try {
-      const scopeOpts = isProject
-        ? { scope: 'project' as const, projectRoot }
-        : { scope: 'user' as const };
+      const scopeOpts = isProject ? { scope: 'project' as const, projectRoot } : { scope: 'user' as const };
 
       // When purging, the canonical store is shared across all tools,
       // so any deployed dependent on ANY tool is at risk
       const targetLinks = await getLinkRecords(name, opts.purge ? undefined : scopeOpts);
       const activeTools = opts.purge
-        ? null  // null = match all tools
+        ? null // null = match all tools
         : tools.filter((t) => targetLinks.some((l) => l.tool === t));
 
       const graph = await buildDepGraph();
@@ -49,9 +60,8 @@ export async function removeCommand(name: string, opts: RemoveOptions): Promise<
         // Purge destroys the canonical store shared by all scopes,
         // so check dependents across all scopes
         const links = await getLinkRecords(dep, opts.purge ? undefined : scopeOpts);
-        const hasOverlap = activeTools === null
-          ? links.length > 0
-          : links.some((l) => activeTools.includes(l.tool as ToolName));
+        const hasOverlap =
+          activeTools === null ? links.length > 0 : links.some((l) => activeTools.includes(l.tool as ToolName));
         if (hasOverlap) {
           deployedDependents.push(dep);
         }
@@ -69,9 +79,7 @@ export async function removeCommand(name: string, opts: RemoveOptions): Promise<
   }
 
   for (const tool of tools) {
-    const result = isProject
-      ? await undeployProject(name, tool, projectRoot!)
-      : await undeploy(name, tool);
+    const result = isProject ? await undeployProject(name, tool, projectRoot!) : await undeploy(name, tool);
     switch (result.action) {
       case 'undeployed':
         console.log(chalk.green(`✓ Removed ${name} from ${tool}${isProject ? ' (project)' : ''}`));
