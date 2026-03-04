@@ -15,12 +15,7 @@ import {
 import { cloneOrPull, cloneOrPullWithStatus } from '../../sources/git.js';
 import { scanSourceRepo, type RemoteSkill } from '../../sources/scanner.js';
 import { sourceRepoDir } from '../../fs/paths.js';
-import {
-  importSingleSkill,
-  deploySingleSkill,
-  checkSkillConflict,
-  type ConflictStatus,
-} from '../../commands/_import-helpers.js';
+import { importSingleSkill, checkSkillConflict, type ConflictStatus } from '../../commands/_import-helpers.js';
 import { resolveInstallInput } from '../../core/install-resolver.js';
 import { skillFile } from '../../fs/paths.js';
 
@@ -171,7 +166,6 @@ export function useSources() {
           content,
           source: { type: 'git', repo: skill.sourceUrl, originalPath: skill.filePath },
         });
-        await deploySingleSkill(skill.slug, ['cc', 'codex']);
         await refresh();
         return { ok: true, message: `Installed "${skill.slug}"` };
       } catch (err) {

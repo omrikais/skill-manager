@@ -31,7 +31,10 @@ A unified tool for managing skills (instruction files) across **Claude Code** an
 ## Installation
 
 ```bash
-npm install -g @omrikais/skill-manager
+git clone <repo-url> && cd skill-manager
+npm install
+npm run build
+npm link
 ```
 
 This makes the `sm` command available globally.
